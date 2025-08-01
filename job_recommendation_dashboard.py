@@ -262,8 +262,27 @@ st.markdown("""
 @st.cache_data(ttl=300)  # 5분마다 캐시 갱신
 def load_data():
     try:
+        # 환경변수에서 데이터베이스 설정 가져오기
+        import os
+        
+        # Streamlit secrets에서 설정 가져오기 (배포 환경)
+        if hasattr(st, 'secrets') and st.secrets:
+            db_config = st.secrets.get("DB_CONFIG", {})
+            host = db_config.get("host", "127.0.0.1")
+            user = db_config.get("user", "root")
+            password = db_config.get("password", "15861")
+            database = db_config.get("database", "job_recoder")
+            port = db_config.get("port", "3306")
+        else:
+            # 로컬 환경에서는 기본값 사용
+            host = os.getenv("DB_HOST", "127.0.0.1")
+            user = os.getenv("DB_USER", "root")
+            password = os.getenv("DB_PASSWORD", "15861")
+            database = os.getenv("DB_NAME", "job_recoder")
+            port = os.getenv("DB_PORT", "3306")
+        
         engine = create_engine(
-            'mysql+pymysql://root:15861@127.0.0.1:3306/job_recoder?charset=utf8mb4'
+            f'mysql+pymysql://{user}:{password}@{host}:{port}/{database}?charset=utf8mb4'
         )
         
         # 추천 결과 로드
