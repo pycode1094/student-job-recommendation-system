@@ -20,9 +20,17 @@ st.set_page_config(
 def get_database_connection():
     """데이터베이스 연결을 반환합니다."""
     try:
-        engine = create_engine(
-            'mysql+pymysql://root:15861@127.0.0.1:3306/job_recoder?charset=utf8mb4'
-        )
+        # 환경 변수에서 데이터베이스 연결 정보 가져오기
+        db_host = st.secrets.get("DB_HOST", "127.0.0.1")
+        db_user = st.secrets.get("DB_USER", "root")
+        db_password = st.secrets.get("DB_PASSWORD", "15861")
+        db_name = st.secrets.get("DB_NAME", "job_recoder")
+        db_port = st.secrets.get("DB_PORT", "3306")
+        
+        # 연결 문자열 생성
+        connection_string = f'mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}?charset=utf8mb4'
+        
+        engine = create_engine(connection_string)
         return engine
     except Exception as e:
         st.error(f"데이터베이스 연결 실패: {e}")
