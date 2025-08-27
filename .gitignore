@@ -1,18 +1,4 @@
-# 환경변수 파일
-.env
-.env.local
-.env.production
-
-# 데이터베이스 백업 파일
-*.sql
-*.db
-*.sqlite
-
-# 로그 파일
-*.log
-logs/
-
-# 캐시 파일
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -33,31 +19,50 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
-# 가상환경
+# Virtual environments
 venv/
 env/
 ENV/
 
-# IDE 파일
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
 
-# OS 파일
+# OS
 .DS_Store
 Thumbs.db
 
-# 임시 파일
+# Logs
+*.log
+
+# Database
+*.db
+*.sqlite3
+
+# Temporary files
 *.tmp
 *.temp
 
-# 개인정보 포함 파일
-personal_data/
-sensitive_data/
+# Jupyter Notebook
+.ipynb_checkpoints
 
-# API 키 파일
-api_keys.txt
-secrets.json 
+# Streamlit
+.streamlit/
+
+# Environment variables
+.env
+.env.local
+
+# Excel files (if not needed in repo)
+*.xlsx
+*.xls
+
+# Backup files
+*_backup.py
+*_original.py
+*_restored.py
+*_new.py 

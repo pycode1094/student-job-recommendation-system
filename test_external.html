@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 직업 추천 시스템 - 외부 접속 테스트</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .content {
+            padding: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #ecf0f1;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+        .test-section h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .input-group {
+            margin: 15px 0;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #bdc3c7;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+        .result {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .result.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .result.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .result.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-online {
+            background: #27ae60;
+        }
+        .status-offline {
+            background: #e74c3c;
+        }
+        .instructions {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .instructions h4 {
+            color: #856404;
+            margin-top: 0;
+        }
+        .instructions ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 8px 0;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI 직업 추천 시스템</h1>
+            <p>외부 접속 테스트 및 API 확인</p>
+        </div>
+        
+        <div class="content">
+            <div class="instructions">
+                <h4>📋 사용 방법</h4>
+                <ul>
+                    <li>서버 IP 주소를 입력하고 "연결 테스트" 버튼을 클릭하세요</li>
+                    <li>시스템 상태, 추천 생성, 결과 조회 등을 테스트할 수 있습니다</li>
+                    <li>외부 네트워크에서 접속하려면 서버의 공인 IP 주소를 사용하세요</li>
+                </ul>
+            </div>
+
+            <div class="test-section">
+                <h3>🔗 서버 연결 설정</h3>
+                <div class="input-group">
+                    <label for="serverIP">서버 IP 주소:</label>
+                    <input type="text" id="serverIP" placeholder="예: 192.168.1.100 또는 203.241.xxx.xxx" value="localhost">
+                </div>
+                <div class="input-group">
+                    <label for="serverPort">포트 번호:</label>
+                    <input type="text" id="serverPort" placeholder="5000" value="5000">
+                </div>
+                <button class="btn btn-success" onclick="testConnection()">🔍 연결 테스트</button>
+                <div id="connectionResult" class="result" style="display: none;"></div>
+            </div>
+
+            <div class="test-section">
+                <h3>📊 시스템 상태 확인</h3>
+                <button class="btn" onclick="checkHealth()">🏥 상태 확인</button>
+                <div id="healthResult" class="result" style="display: none;"></div>
+            </div>
+
+            <div class="test-section">
+                <h3>🚀 추천 생성</h3>
+                <div class="input-group">
+                    <label for="topK">상위 추천 개수:</label>
+                    <input type="number" id="topK" placeholder="10" value="10" min="1" max="50">
+                </div>
+                <button class="btn btn-warning" onclick="generateRecommendations()">⚡ 추천 생성</button>
+                <div id="generateResult" class="result" style="display: none;"></div>
+            </div>
+
+            <div class="test-section">
+                <h3>📋 추천 결과 조회</h3>
+                <button class="btn" onclick="getRecommendations()">📖 전체 결과 조회</button>
+                <div class="input-group">
+                    <label for="traineeId">훈련생 ID (선택사항):</label>
+                    <input type="text" id="traineeId" placeholder="특정 훈련생의 추천만 조회">
+                </div>
+                <button class="btn" onclick="getTraineeRecommendations()">👤 특정 훈련생 결과</button>
+                <div id="recommendationsResult" class="result" style="display: none;"></div>
+            </div>
+
+            <div class="test-section">
+                <h3>🌐 외부 접속 정보</h3>
+                <div id="externalInfo">
+                    <p><strong>현재 서버:</strong> <span id="currentServer">localhost:5000</span></p>
+                    <p><strong>상태:</strong> <span id="serverStatus"><span class="status-indicator status-offline"></span>연결 안됨</span></p>
+                    <p><strong>외부 접속 URL:</strong> <span id="externalURL">http://[공인IP]:5000</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let serverIP = 'localhost';
+        let serverPort = '5000';
+        let isConnected = false;
+
+        // IP 주소 입력 시 자동 업데이트
+        document.getElementById('serverIP').addEventListener('input', function() {
+            serverIP = this.value;
+            updateServerInfo();
+        });
+
+        document.getElementById('serverPort').addEventListener('input', function() {
+            serverPort = this.value;
+            updateServerInfo();
+        });
+
+        function updateServerInfo() {
+            document.getElementById('currentServer').textContent = `${serverIP}:${serverPort}`;
+            document.getElementById('externalURL').textContent = `http://${serverIP}:${serverPort}`;
+        }
+
+        function getBaseURL() {
+            return `http://${serverIP}:${serverPort}`;
+        }
+
+        function showResult(elementId, content, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.textContent = content;
+            element.className = `result ${type}`;
+            element.style.display = 'block';
+        }
+
+        async function testConnection() {
+            const url = `${getBaseURL()}/api/health`;
+            showResult('connectionResult', '연결 테스트 중...', 'info');
+            
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    const data = await response.json();
+                    isConnected = true;
+                    updateServerStatus();
+                    showResult('connectionResult', `✅ 연결 성공!\n\n응답 데이터:\n${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    isConnected = false;
+                    updateServerStatus();
+                    showResult('connectionResult', `❌ 연결 실패 (HTTP ${response.status})\n\nURL: ${url}`, 'error');
+                }
+            } catch (error) {
+                isConnected = false;
+                updateServerStatus();
+                showResult('connectionResult', `❌ 연결 오류:\n${error.message}\n\nURL: ${url}`, 'error');
+            }
+        }
+
+        function updateServerStatus() {
+            const statusElement = document.getElementById('serverStatus');
+            if (isConnected) {
+                statusElement.innerHTML = '<span class="status-indicator status-online"></span>연결됨';
+            } else {
+                statusElement.innerHTML = '<span class="status-indicator status-offline"></span>연결 안됨';
+            }
+        }
+
+        async function checkHealth() {
+            const url = `${getBaseURL()}/api/health`;
+            showResult('healthResult', '상태 확인 중...', 'info');
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('healthResult', `🏥 시스템 상태:\n${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    showResult('healthResult', `❌ 상태 확인 실패:\n${JSON.stringify(data, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResult('healthResult', `❌ 상태 확인 오류:\n${error.message}`, 'error');
+            }
+        }
+
+        async function generateRecommendations() {
+            const topK = document.getElementById('topK').value;
+            const url = `${getBaseURL()}/api/generate-recommendations`;
+            showResult('generateResult', '추천 생성 중... (시간이 걸릴 수 있습니다)', 'info');
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ top_k: parseInt(topK) })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('generateResult', `✅ 추천 생성 완료!\n\n결과:\n${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    showResult('generateResult', `❌ 추천 생성 실패:\n${JSON.stringify(data, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResult('generateResult', `❌ 추천 생성 오류:\n${error.message}`, 'error');
+            }
+        }
+
+        async function getRecommendations() {
+            const url = `${getBaseURL()}/api/recommendations`;
+            showResult('recommendationsResult', '추천 결과 조회 중...', 'info');
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('recommendationsResult', `📖 추천 결과 (${data.count}개):\n${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    showResult('recommendationsResult', `❌ 결과 조회 실패:\n${JSON.stringify(data, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResult('recommendationsResult', `❌ 결과 조회 오류:\n${error.message}`, 'error');
+            }
+        }
+
+        async function getTraineeRecommendations() {
+            const traineeId = document.getElementById('traineeId').value;
+            if (!traineeId) {
+                showResult('recommendationsResult', '❌ 훈련생 ID를 입력해주세요.', 'error');
+                return;
+            }
+            
+            const url = `${getBaseURL()}/api/recommendations/trainee/${traineeId}`;
+            showResult('recommendationsResult', `👤 훈련생 ${traineeId}의 추천 결과 조회 중...`, 'info');
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('recommendationsResult', `👤 훈련생 ${traineeId}의 추천 결과 (${data.count}개):\n${JSON.stringify(data, null, 2)}`, 'success');
+                } else if (response.status === 404) {
+                    showResult('recommendationsResult', `❌ 훈련생 ${traineeId}에 대한 추천 결과가 없습니다.`, 'error');
+                } else {
+                    showResult('recommendationsResult', `❌ 결과 조회 실패:\n${JSON.stringify(data, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResult('recommendationsResult', `❌ 결과 조회 오류:\n${error.message}`, 'error');
+            }
+        }
+
+        // 페이지 로드 시 초기화
+        updateServerInfo();
+    </script>
+</body>
+</html>
+
