@@ -1,9 +1,7 @@
-from PIL.ImagePalette import wedge
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from sqlalchemy import create_engine
 import numpy as np
 from datetime import datetime, timedelta
 import random
@@ -89,23 +87,14 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# DB 연결 함수
+# CSV 파일에서 학생 추천 데이터 가져오기
 @st.cache_data(ttl=300)
 def get_student_recommendations(student_id):
     try:
-        engine = create_engine(
-            'mysql+pymysql://root:15861@127.0.0.1:3306/job_recoder?charset=utf8mb4'
-        )
-        
-        # 해당 학생의 추천 결과 가져오기
-        query = f"""
-        SELECT * FROM improved_recommendations 
-        WHERE trainee_id = {student_id}
-        ORDER BY rank
-        LIMIT 10
-        """
-        df = pd.read_sql(query, engine)
-        return df
+        # CSV 파일에서 해당 학생의 추천 결과 가져오기
+        df = pd.read_csv('student_recommendations.csv')
+        student_data = df[df['student_id'] == student_id].sort_values('recommendation_rank')
+        return student_data
     except Exception as e:
         st.error(f"데이터베이스 연결 오류: {e}")
         return pd.DataFrame()
@@ -264,20 +253,20 @@ def main():
             with st.container():
                 st.markdown(f"""
                 <div class="job-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <h4>🏢 {row.get('company_name', '기업명')}</h4>
-                            <p><strong>직무:</strong> {row.get('job_title', '직무명')}</p>
-                            <p><strong>지역:</strong> {row.get('location', '지역')}</p>
-                            <p><strong>급여:</strong> {row.get('salary', '급여 정보')}</p>
-                        </div>
-                        <div style="text-align: right;">
-                            <h3 style="color: #667eea;">#{row.get('rank', idx+1)}</h3>
-                            <p style="color: #28a745; font-weight: bold;">
-                                적합도: {row.get('weighted_similarity_score', 0.85):.2f}
-                            </p>
-                        </div>
-                    </div>
+                                         <div style="display: flex; justify-content: space-between; align-items: center;">
+                         <div>
+                             <h4>🏢 {row.get('recommended_company', '기업명')}</h4>
+                             <p><strong>직무:</strong> {row.get('recommended_title', '직무명')}</p>
+                             <p><strong>지역:</strong> {row.get('recommended_location', '지역')}</p>
+                             <p><strong>산업:</strong> {row.get('recommended_industry', '산업')}</p>
+                         </div>
+                         <div style="text-align: right;">
+                             <h3 style="color: #667eea;">#{row.get('recommendation_rank', idx+1)}</h3>
+                             <p style="color: #28a745; font-weight: bold;">
+                                 적합도: {row.get('final_score', 0.85):.3f}
+                             </p>
+                         </div>
+                     </div>
                 </div>
                 """, unsafe_allow_html=True)
     else:

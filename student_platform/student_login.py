@@ -85,18 +85,17 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# DB 연결 함수
+# CSV 파일에서 학생 데이터 가져오기
 @st.cache_data(ttl=300)
 def get_student_data():
     try:
-        engine = create_engine(
-            'mysql+pymysql://root:15861@127.0.0.1:3306/job_recoder?charset=utf8mb4'
-        )
-        
-        # 훈련생 데이터에서 학번 정보 가져오기
-        query = "SELECT 학번, 이름 FROM merged_trainee_data"
-        df = pd.read_sql(query, engine)
-        return df
+        # CSV 파일에서 학생 정보 가져오기
+        df = pd.read_csv('student_recommendations.csv')
+        # student_id를 기준으로 unique한 학생 정보 추출
+        student_info = df[['student_id']].drop_duplicates()
+        # student_id를 학번으로, 임시로 이름 생성 (실제로는 이름 정보가 없으므로)
+        student_info['이름'] = student_info['student_id'].apply(lambda x: f"학생_{x[-4:]}")
+        return student_info
     except Exception as e:
         st.error(f"데이터베이스 연결 오류: {e}")
         return pd.DataFrame()
