@@ -43,6 +43,7 @@ def load_recommendations():
         st.error(f"파일 로드 실패: {e}")
         return None
 
+@st.cache_data
 def get_student_credentials():
     """학생 로그인 정보를 반환합니다."""
     df = load_recommendations()
@@ -52,9 +53,20 @@ def get_student_credentials():
     # 학생별 정보 추출
     students = {}
     for student_id in df['student_id'].unique():
-        student_data = df[df['student_id'] == student_id].iloc[0]
+        # student_id가 문자열인지 확인하고 안전하게 처리
+        if pd.isna(student_id) or student_id == '':
+            continue
+            
+        student_id_str = str(student_id)
+        
+        # 학번 뒤 4자리 추출 (안전하게)
+        if len(student_id_str) >= 4:
+            display_name = f"학생 {student_id_str[-4:]}"
+        else:
+            display_name = f"학생 {student_id_str}"
+        
         students[student_id] = {
-            'name': f"학생 {student_id[-4:]}",  # 학번 뒤 4자리
+            'name': display_name,
             'course': "AI 활용 과정",  # 기본값
             'password': '0000'  # 모든 학생의 비밀번호는 0000
         }
@@ -68,8 +80,11 @@ def get_student_recommendations(student_id):
         if df is None:
             return None
         
+        # student_id를 문자열로 변환하여 안전하게 처리
+        student_id_str = str(student_id)
+        
         # 해당 학생의 추천 결과만 필터링
-        student_recommendations = df[df['student_id'] == student_id].copy()
+        student_recommendations = df[df['student_id'] == student_id_str].copy()
         
         if student_recommendations.empty:
             return None
@@ -111,11 +126,14 @@ def login_page():
                 if student_id and password:
                     credentials = get_student_credentials()
                     
-                    if student_id in credentials and credentials[student_id]['password'] == password:
+                    # student_id를 문자열로 변환하여 비교
+                    student_id_str = str(student_id)
+                    
+                    if student_id_str in credentials and credentials[student_id_str]['password'] == password:
                         st.session_state['logged_in'] = True
-                        st.session_state['student_id'] = student_id
-                        st.session_state['student_name'] = credentials[student_id]['name']
-                        st.session_state['course_name'] = credentials[student_id]['course']
+                        st.session_state['student_id'] = student_id_str
+                        st.session_state['student_name'] = credentials[student_id_str]['name']
+                        st.session_state['course_name'] = credentials[student_id_str]['course']
                         st.rerun()
                     else:
                         st.error("❌ 학번 또는 비밀번호가 올바르지 않습니다.")
